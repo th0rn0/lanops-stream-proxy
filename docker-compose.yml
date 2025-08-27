@@ -1,0 +1,22 @@
+
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:1.14.0
+    container_name: mediamtx
+    network_mode: host
+    volumes:
+      - ./resources/mediamtx/mediamtx.yml:/mediamtx.yml:ro
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+  bridge:
+    build:
+      context: .
+      dockerfile: resources/docker/bridge/Dockerfile
+    volumes:
+      - ./src:/app
+    env_file: $PWD/src/.env
+    command: go run .
+    ports:
+      - 8080:8080
+    
