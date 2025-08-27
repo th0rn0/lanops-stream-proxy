@@ -12,7 +12,7 @@ services:
   bridge:
     build:
       context: .
-      dockerfile: resources/docker/bridge/Dockerfile
+      dockerfile: resources/docker/Dockerfile
     volumes:
       - ./src:/app
     env_file: $PWD/src/.env

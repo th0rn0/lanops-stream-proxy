@@ -10,7 +10,7 @@ RUN apk add --no-cache gcc musl-dev
 COPY src/go.mod src/go.sum ./
 RUN go mod download
 
-COPY api/ .
+COPY src/ .
 
 RUN go build -ldflags='-s -w -extldflags "-static"' -o /stream-proxy
 
