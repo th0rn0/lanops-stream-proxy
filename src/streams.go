@@ -11,7 +11,7 @@ func getProxyStreams() ([]MediamtxListStreamsOutput, error) {
 	var response MediamtxListStreamsResponse
 	var streams []MediamtxListStreamsOutput
 	// Example URL (replace with your target)
-	url := fmt.Sprintf("http://%s/v3/paths/list", proxyStreamAddress)
+	url := fmt.Sprintf("http://%s/v3/paths/list", proxyStreamApiAddress)
 
 	// Create HTTP GET request
 	resp, err := http.Get(url)

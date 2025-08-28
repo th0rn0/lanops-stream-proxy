@@ -36,7 +36,7 @@ func addFadeSourceFilterToStream(dbStream Stream) error {
 
 func fadeStream(dbStream Stream, start, end float64) error {
 	steps := 40                                        // how many fade steps
-	interval := 2 * time.Second / time.Duration(steps) // delay between updates
+	interval := 5 * time.Second / time.Duration(steps) // delay between updates
 
 	for i := 0; i <= steps; i++ {
 		// opacity := 1.0 - (float64(i) / float64(steps))
@@ -91,7 +91,7 @@ func addStreamNameTextToStream(dbStream Stream) (Stream, error) {
 		"boundsType": "OBS_BOUNDS_NONE",
 		"enabled":    false,
 	}
-	inputTextUuid, inputTextId, err := createOBSInput(obsSceneUuid, fmt.Sprintf("text-%s", dbStream.Name), "text_gdiplus_v3", inputSettingsText)
+	inputTextUuid, inputTextId, err := createOBSInput(obsSceneUuid, fmt.Sprintf("text-%s", dbStream.Name), "text_ft2_source_v2", inputSettingsText)
 	if err != nil {
 		return dbStream, err
 	}

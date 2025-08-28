@@ -9,14 +9,14 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-  bridge:
-    build:
-      context: .
-      dockerfile: resources/docker/Dockerfile
-    volumes:
-      - ./src:/app
-    env_file: $PWD/src/.env
-    command: go run .
-    ports:
-      - 8080:8080
+  # bridge:
+  #   build:
+  #     context: .
+  #     dockerfile: resources/docker/Dockerfile
+  #   volumes:
+  #     - ./src:/app
+  #   env_file: $PWD/src/.env
+  #   command: go run .
+  #   ports:
+  #     - 8080:8080
     

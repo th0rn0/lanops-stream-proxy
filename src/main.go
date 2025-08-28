@@ -12,6 +12,8 @@ import (
 	"github.com/rs/zerolog"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	goobRequestInputs "github.com/andreykaipov/goobs/api/requests/inputs"
 )
 
 var (
@@ -22,7 +24,7 @@ var (
 	obsWebsocketAddress    string
 	obsSceneName           string
 	obsSceneUuid           string
-	proxyStreamAddress     string
+	proxyStreamApiAddress  string
 	proxyStreamRTMPAddress string
 	obsStreamRotation      bool
 )
@@ -42,8 +44,8 @@ func init() {
 	godotenv.Load()
 
 	// Check required Variables
-	if proxyStreamAddress, envExists = os.LookupEnv("PROXY_STREAM_ADDRESS"); !envExists || proxyStreamAddress == "" {
-		logger.Fatal().Err(err).Msg("PROXY_STREAM_ADDRESS IS NOT SET!")
+	if proxyStreamApiAddress, envExists = os.LookupEnv("PROXY_STREAM_API_ADDRESS"); !envExists || proxyStreamApiAddress == "" {
+		logger.Fatal().Err(err).Msg("PROXY_STREAM_API_ADDRESS IS NOT SET!")
 	}
 	if proxyStreamRTMPAddress, envExists = os.LookupEnv("PROXY_STREAM_RTMP_ADDRESS"); !envExists || proxyStreamRTMPAddress == "" {
 		logger.Fatal().Err(err).Msg("PROXY_STREAM_RTMP_ADDRESS IS NOT SET!")
@@ -109,6 +111,13 @@ func main() {
 	// Start Stream Sync
 	go syncProxyStreamsToDatabase()
 	go syncDatabaseStreamsToOBS()
+
+	resp, _ := obsClient.Inputs.GetInputKindList(&goobRequestInputs.GetInputKindListParams{})
+
+	fmt.Println("Supported OBS Input Kinds:")
+	for _, kind := range resp.InputKinds {
+		fmt.Println("-", kind)
+	}
 
 	// Start Stream Rotation
 	// DEBUG - mpve me to a DB entry?
