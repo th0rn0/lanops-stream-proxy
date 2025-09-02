@@ -29,7 +29,7 @@ func (client *Client) RotateActiveStream() *ClientError {
 			}
 		}
 
-		nextStream, err := client.db.GetNextAvailableStream(client.obsStreams.current)
+		nextStream, err := client.db.GetNextEnabledStream(client.obsStreams.current)
 		if err != nil {
 			return &ClientError{
 				Err:     err,
