@@ -17,9 +17,12 @@ import (
 )
 
 var (
-	logger zerolog.Logger
-	cfg    config.Config
-	msgCh  = make(chan channels.MsgCh, 20)
+	logger          zerolog.Logger
+	cfg             config.Config
+	msgCh           = make(chan channels.MsgCh, 20)
+	dbStreamsClient *dbstreams.Client
+	mediamtxClient  *mediamtx.Client
+	obsClient       *obs.Client
 )
 
 func init() {
@@ -36,6 +39,27 @@ func init() {
 		logger.Fatal().Err(err).Msg("Failed Connecting to DB")
 	}
 	db.AutoMigrate(dbstreams.Stream{})
+
+	dbStreamsClient, err = dbstreams.New(cfg)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed to create DB Streams Client")
+	}
+
+	mediamtxClient, err = mediamtx.New(cfg, dbStreamsClient, msgCh)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed to create MediaMTX Client")
+	}
+
+	obsClient, err = obs.New(cfg, dbStreamsClient, msgCh)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed to OBS Client")
+	}
+
+	logger.Info().Msg("Checking if Proxy Scene exists in OBS")
+	if err := obsClient.InitProxyScene(); err != nil {
+		logger.Fatal().Err(err.Err).Msg("Cannot create OBS Scene")
+	}
+
 }
 
 func main() {
@@ -48,26 +72,6 @@ func main() {
 			logger.Info().Msg(msg.Message)
 		}
 	}()
-
-	dbStreamsClient, err := dbstreams.New(cfg)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("Failed to create DB Streams Client")
-	}
-
-	mediamtxClient, err := mediamtx.New(cfg, dbStreamsClient, msgCh)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("Failed to create MediaMTX Client")
-	}
-
-	obsClient, err := obs.New(cfg, dbStreamsClient, msgCh)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("Failed to OBS Client")
-	}
-
-	logger.Info().Msg("Checking if Proxy Scene exists in OBS")
-	if err := obsClient.InitProxyScene(); err != nil {
-		logger.Fatal().Err(err.Err).Msg("Cannot create OBS Scene")
-	}
 
 	logger.Info().Msg("Starting API")
 	go api.Run()
