@@ -42,6 +42,7 @@ func main() {
 
 	numStreams := 10 // number of streams to generate
 	baseURL := "rtmp://localhost/stream"
+	// baseURL := "rtmp://10.0.0.224/stream"
 
 	for i := 1; i <= numStreams; i++ {
 		stream := Stream{
@@ -52,7 +53,7 @@ func main() {
 		}
 		wg.Add(1)
 		go startStream(stream, &wg)
-		time.Sleep(20 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 
 	wg.Wait()

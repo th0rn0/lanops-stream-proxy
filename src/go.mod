@@ -3,6 +3,7 @@ module lanops/obs-proxy-bridge
 go 1.23.6
 
 require (
+	github.com/andreykaipov/goobs v1.5.6
 	github.com/gin-gonic/gin v1.10.1
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.34.0
@@ -11,7 +12,6 @@ require (
 )
 
 require (
-	github.com/andreykaipov/goobs v1.5.6 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect

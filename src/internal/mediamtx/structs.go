@@ -1,19 +1,23 @@
-package main
+package mediamtx
 
-import "time"
+import (
+	"lanops/obs-proxy-bridge/internal/channels"
+	"lanops/obs-proxy-bridge/internal/config"
+	"lanops/obs-proxy-bridge/internal/dbstreams"
+	"time"
+)
 
-// Models
-type Stream struct {
-	Name    string `gorm:"primaryKey" json:"name"`
-	Enabled bool   `gorm:"default:true" json:"enabled"`
-	// We need both UUID and ID due to imitations with the OBS WebSockets
-	ObsStreamUuid string `json:"obsStreamUuid"`
-	ObsStreamId   int    `json:"obsStreamId"`
-	ObsTextUuid   string `json:"obsTextUuid"`
-	ObsTextId     int    `json:"obsTextId"`
+type Client struct {
+	cfg   config.Config
+	db    *dbstreams.Client
+	msgCh chan<- channels.MsgCh
 }
 
-// Responses
+type ClientError struct {
+	Err     error
+	Message string
+}
+
 type MediamtxListStreamsOutput struct {
 	Name     string `json:"name"`
 	ConfName string `json:"confName"`

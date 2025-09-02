@@ -1,5 +1,7 @@
 ATTENDEE > MEDIAMTX > HOOK > GOLANG WEBSERVER > OBS
 
+Entry Point is cmd/stream-proxy/main
+
 
 GOLANG WEBSERVER will have admin page that will then interact with OBS CLIENT to accept/deny streams to be published to OBS
 
