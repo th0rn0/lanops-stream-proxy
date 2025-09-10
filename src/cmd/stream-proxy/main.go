@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/andreykaipov/goobs"
 	"github.com/rs/zerolog"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -25,11 +26,11 @@ var (
 	obsClient       *obs.Client
 )
 
-func init() {
+func main() {
 	logger = zerolog.New(
 		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339},
 	).Level(zerolog.TraceLevel).With().Timestamp().Caller().Logger()
-	logger.Info().Msg("Starting LanOps Stream Proxy")
+	logger.Info().Msg("Initializing Stream Proxy")
 
 	logger.Info().Msg("Loading Config")
 	cfg = config.Load()
@@ -40,7 +41,12 @@ func init() {
 	}
 	db.AutoMigrate(dbstreams.Stream{})
 
-	dbStreamsClient, err = dbstreams.New(cfg)
+	goobsClient, err := goobs.New(cfg.ObsWebSocketAddress, goobs.WithPassword(cfg.ObsWebSocketPassword))
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed Connecting to OBS")
+	}
+
+	dbStreamsClient, err = dbstreams.New(cfg, db)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to create DB Streams Client")
 	}
@@ -50,7 +56,7 @@ func init() {
 		logger.Fatal().Err(err).Msg("Failed to create MediaMTX Client")
 	}
 
-	obsClient, err = obs.New(cfg, dbStreamsClient, msgCh)
+	obsClient, err = obs.New(cfg, dbStreamsClient, goobsClient, msgCh)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to OBS Client")
 	}
@@ -60,11 +66,7 @@ func init() {
 		logger.Fatal().Err(err.Err).Msg("Cannot create OBS Scene")
 	}
 
-}
-
-func main() {
-
-	logger.Info().Msg("Starting Proxy Stream Sync")
+	logger.Info().Msg("Starting Proxy Stream")
 
 	// Message Channel
 	go func() {

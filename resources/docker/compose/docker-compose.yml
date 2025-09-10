@@ -1,0 +1,22 @@
+
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:1.14.0
+    container_name: mediamtx
+    network_mode: host
+    environment:
+      - MTX_API=yes
+      - MTX_APIADDRESS=:9997
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+  mediamtx-connect:
+    image: bcanfield/mediamtx-connect
+    container_name: mediamtx-connect
+    restart: unless-stopped
+    network_mode: host
+    networks:
+      - mtx
+    ports:
+      - 3000:3000
+    

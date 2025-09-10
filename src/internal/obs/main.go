@@ -8,12 +8,7 @@ import (
 	"github.com/andreykaipov/goobs"
 )
 
-func New(cfg config.Config, dbStreamsClient *dbstreams.Client, msgCh chan<- channels.MsgCh) (*Client, error) {
-	obsClient, err := goobs.New(cfg.ObsWebSocketAddress, goobs.WithPassword(cfg.ObsWebSocketPassword))
-	if err != nil {
-		return nil, err
-	}
-
+func New(cfg config.Config, dbStreamsClient *dbstreams.Client, obsClient *goobs.Client, msgCh chan<- channels.MsgCh) (*Client, error) {
 	client := &Client{
 		cfg:   cfg,
 		obs:   obsClient,

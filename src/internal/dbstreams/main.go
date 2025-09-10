@@ -4,17 +4,10 @@ import (
 	"errors"
 	"lanops/obs-proxy-bridge/internal/config"
 
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func New(cfg config.Config) (*Client, error) {
-	// Load Database
-	db, err := gorm.Open(sqlite.Open(cfg.DbPath), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-
+func New(cfg config.Config, db *gorm.DB) (*Client, error) {
 	client := &Client{
 		cfg: cfg,
 		db:  db,

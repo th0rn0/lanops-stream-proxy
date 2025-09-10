@@ -12,8 +12,8 @@ RUN go mod download
 
 COPY src/ .
 
-RUN go build -ldflags='-s -w -extldflags "-static"' -o /stream-proxy
+RUN go build -ldflags='-s -w -extldflags "-static"' -o bin/stream-proxy ./cmd/stream-proxy
 
 EXPOSE 8080
 
-CMD [ "/stream-proxy" ]
+CMD [ "bin/stream-proxy" ]

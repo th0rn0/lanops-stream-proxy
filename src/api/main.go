@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -28,12 +29,18 @@ func init() {
 	logger.Info().Msg("Loading API")
 
 	cfg = config.Load()
-	dbStreamsClient, err = dbstreams.New(cfg)
+	db, err := gorm.Open(sqlite.Open(cfg.DbPath), &gorm.Config{})
+	if err != nil {
+		logger.Fatal().Err(err).Msg("Failed Connecting to DB")
+	}
+	dbStreamsClient, err = dbstreams.New(cfg, db)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to create DB Streams Client")
 	}
 }
 
+// TODO - new me up and pass in the logger and db client
+// func Run(client) {
 func Run() {
 	gin.DefaultWriter = zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	r := gin.Default()
