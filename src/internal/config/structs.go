@@ -8,4 +8,7 @@ type Config struct {
 	ObsProxySceneUuid    string
 	MediaMtxApiAddress   string
 	MediaMtxRtmpAddress  string
+	ApiAdminUsername     string
+	ApiAdminPassword     string
+	ApiPort              string
 }

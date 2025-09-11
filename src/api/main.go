@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"lanops/obs-proxy-bridge/internal/config"
 	"lanops/obs-proxy-bridge/internal/dbstreams"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"gorm.io/driver/sqlite"
@@ -58,10 +60,14 @@ func Run() {
 			Dur("latency", latency).
 			Msg("request handled")
 	})
-	r.GET("/streams", handleGetStreams)
-	r.GET("/streams/:name", handleGetStreamByName)
-	r.POST("/streams/:name/enable", handleEnableStreamByName)
-	r.Run()
+	r.Use(cors.Default())
+	authorized := r.Group("", gin.BasicAuth(gin.Accounts{
+		cfg.ApiAdminUsername: cfg.ApiAdminPassword,
+	}))
+	authorized.GET("/streams", handleGetStreams)
+	authorized.GET("/streams/:name", handleGetStreamByName)
+	authorized.POST("/streams/:name/enable", handleEnableStreamByName)
+	r.Run(fmt.Sprintf(":%s", cfg.ApiPort))
 }
 
 func handleGetStreams(c *gin.Context) {

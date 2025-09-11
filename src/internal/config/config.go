@@ -40,6 +40,20 @@ func Load() Config {
 		log.Fatal("❌ MEDIAMTX_RTMP_ADDRESS not set in environment")
 	}
 
+	// API
+	apiAdminUsername := os.Getenv("API_ADMIN_USERNAME")
+	if apiAdminUsername == "" {
+		log.Fatal("❌ API_ADMIN_USERNAME not set in environment")
+	}
+	apiAdminPassword := os.Getenv("API_ADMIN_PASSWORD")
+	if apiAdminPassword == "" {
+		log.Fatal("❌ API_ADMIN_PASSWORD not set in environment")
+	}
+	apiPort := os.Getenv("API_PORT")
+	if apiPort == "" {
+		log.Fatal("❌ API_PORT not set in environment")
+	}
+
 	return Config{
 		DbPath:               dbPath,
 		ObsWebSocketAddress:  obsWebSocketAddress,
@@ -47,5 +61,8 @@ func Load() Config {
 		ObsProxySceneName:    obsProxySceneName,
 		MediaMtxApiAddress:   mediaMtxApiAddress,
 		MediaMtxRtmpAddress:  mediaMtxRtmpAddress,
+		ApiAdminUsername:     apiAdminUsername,
+		ApiAdminPassword:     apiAdminPassword,
+		ApiPort:              apiPort,
 	}
 }
