@@ -41,7 +41,7 @@ func main() {
 	var wg sync.WaitGroup
 
 	numStreams := 10 // number of streams to generate
-	baseURL := "rtmp://localhost/stream"
+	baseURL := "rtmp://10.0.0.224/stream"
 	// baseURL := "rtmp://10.0.0.224/stream"
 
 	for i := 1; i <= numStreams; i++ {

@@ -47,6 +47,9 @@ go run ./cmd/stream-proxy
 | `OBS_PROXY_SCENE_NAME`   | Name of the scene used as a proxy in OBS. |
 | `MEDIAMTX_API_ADDRESS`   | Address of the MediaMTX API endpoint.     |
 | `MEDIAMTX_RTMP_ADDRESS`  | RTMP address for MediaMTX streaming.      |
+| `API_ADMIN_USERNAME`     | Username to access the API.               |
+| `API_ADMIN_PASSWORD`     | Password to access the API.               |
+| `API_PORT`               | Port to expose the API.                   |
 
 ## Docker
 
@@ -62,6 +65,9 @@ docker run -d \
   -e OBS_PROXY_SCENE_NAME="Proxy Scenes" \
   -e MEDIAMTX_API_ADDRESS= \
   -e MEDIAMTX_RTMP_ADDRESS= \
+  -e API_ADMIN_USERNAME= \
+  -e API_ADMIN_PASSWORD= \
+  -e API_PORT=8080 \
   -p 8080:8080 \
   th0rn0/lanops-spotify-jukebox:service-latest
 ```
@@ -78,6 +84,9 @@ docker run -d \
       OBS_PROXY_SCENE_NAME: "Proxy Scenes"
       MEDIAMTX_API_ADDRESS: 
       MEDIAMTX_RTMP_ADDRESS: 
+      API_ADMIN_USERNAME:
+      API_ADMIN_PASSWORD:
+      API_PORT: 8080
     ports:
       - 8080:8080
 ```
