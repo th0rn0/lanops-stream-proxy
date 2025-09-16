@@ -40,7 +40,7 @@ func startStream(s Stream, wg *sync.WaitGroup) {
 func main() {
 	var wg sync.WaitGroup
 
-	numStreams := 10 // number of streams to generate
+	numStreams := 3 // number of streams to generate
 	baseURL := "rtmp://10.0.0.224/stream"
 	// baseURL := "rtmp://10.0.0.224/stream"
 
