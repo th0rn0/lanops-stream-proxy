@@ -21,7 +21,7 @@ func (client *Client) InitProxyScene() *ClientError {
 	}
 	obsSceneExists := false
 	for _, obsScene := range obsScenes {
-		fmt.Println(&obsScene)
+		fmt.Println(obsScene)
 		if obsScene.SceneName == client.cfg.ObsProxySceneName {
 			obsSceneExists = true
 			client.cfg.ObsProxySceneUuid = obsScene.SceneUuid
