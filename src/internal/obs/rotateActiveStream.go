@@ -63,7 +63,7 @@ func (client *Client) RotateActiveStream() *ClientError {
 				if err = client.setStreamSceneItemsFade(*nextStream, 0, 100); err != nil {
 					return &ClientError{
 						Err:     err,
-						Message: "Cannot Set Stream Visibility",
+						Message: "Cannot Set Stream Fade",
 					}
 				}
 				return nil
@@ -77,7 +77,7 @@ func (client *Client) RotateActiveStream() *ClientError {
 			if err = client.setStreamSceneItemsVisibility(*client.obsStreams.current, false); err != nil {
 				return &ClientError{
 					Err:     err,
-					Message: "Cannot Set Stream Visibility",
+					Message: "Cannot Set Stream Fade",
 				}
 			}
 			client.obsStreams.previous = client.obsStreams.current

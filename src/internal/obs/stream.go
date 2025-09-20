@@ -60,8 +60,10 @@ func (client *Client) setStreamSceneItemsFade(stream dbstreams.Stream, start, en
 		filterName := "FadeFilter"
 
 		// Media Source
+		mediaSourceName := fmt.Sprintf("media_source-%s", stream.Name)
 		_, err := client.obs.Filters.SetSourceFilterSettings(&goobRequestFilters.SetSourceFilterSettingsParams{
-			SourceUuid:     &stream.ObsStreamUuid,
+			SourceName: &mediaSourceName,
+			// SourceUuid:     &stream.ObsStreamUuid,
 			FilterName:     &filterName,
 			FilterSettings: filterSettings,
 		})
@@ -69,8 +71,10 @@ func (client *Client) setStreamSceneItemsFade(stream dbstreams.Stream, start, en
 			return err
 		}
 		// Text
+		textName := fmt.Sprintf("text-%s", stream.Name)
 		_, err = client.obs.Filters.SetSourceFilterSettings(&goobRequestFilters.SetSourceFilterSettingsParams{
-			SourceUuid:     &stream.ObsTextUuid,
+			SourceName: &textName,
+			// SourceUuid:     &stream.ObsTextUuid,
 			FilterName:     &filterName,
 			FilterSettings: filterSettings,
 		})
