@@ -119,7 +119,7 @@ func (client *Client) createStreamMediaSourceInput(stream dbstreams.Stream) (dbs
 
 	// Fit to screen
 	_, err = client.obs.SceneItems.SetSceneItemTransform(&goobRequestSceneItems.SetSceneItemTransformParams{
-		SceneItemId: &resp.SceneItemId,
+		SceneItemId: &stream.ObsStreamId,
 		SceneItemTransform: &typedefs.SceneItemTransform{
 			BoundsType:      "OBS_BOUNDS_SCALE_INNER", // fit within screen
 			BoundsAlignment: 0,                        // center
