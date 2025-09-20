@@ -8,6 +8,7 @@ import (
 	goobRequestFilters "github.com/andreykaipov/goobs/api/requests/filters"
 	goobRequestInputs "github.com/andreykaipov/goobs/api/requests/inputs"
 	goobRequestSceneItems "github.com/andreykaipov/goobs/api/requests/sceneitems"
+	"github.com/andreykaipov/goobs/api/typedefs"
 )
 
 func (client *Client) setStreamSceneItemsVisibility(stream dbstreams.Stream, enabled bool) (err error) {
@@ -112,6 +113,20 @@ func (client *Client) createStreamMediaSourceInput(stream dbstreams.Stream) (dbs
 
 	// Add Fade Source Filter
 	err = client.createStreamSceneItemFadeSourceFilter(stream.ObsStreamUuid)
+	if err != nil {
+		return stream, err
+	}
+
+	// Fit to screen
+	_, err = client.obs.SceneItems.SetSceneItemTransform(&goobRequestSceneItems.SetSceneItemTransformParams{
+		SceneItemId: &resp.SceneItemId,
+		SceneItemTransform: &typedefs.SceneItemTransform{
+			BoundsType:      "OBS_BOUNDS_SCALE_INNER", // fit within screen
+			BoundsAlignment: 0,                        // center
+			BoundsWidth:     1920,                     // match your canvas width
+			BoundsHeight:    1080,                     // match your canvas height
+		},
+	})
 	if err != nil {
 		return stream, err
 	}
