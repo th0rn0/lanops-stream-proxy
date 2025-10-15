@@ -120,19 +120,27 @@ func (client *Client) createStreamMediaSourceInput(stream dbstreams.Stream) (dbs
 		return stream, err
 	}
 
-	// // Fit to screen
-	// _, err = client.obs.SceneItems.SetSceneItemTransform(&goobRequestSceneItems.SetSceneItemTransformParams{
-	// 	SceneItemId: &stream.ObsStreamId,
-	// 	SceneItemTransform: &typedefs.SceneItemTransform{
-	// 		BoundsType:      "OBS_BOUNDS_SCALE_INNER", // fit within screen
-	// 		BoundsAlignment: 0,                        // center
-	// 		BoundsWidth:     1920,                     // match your canvas width
-	// 		BoundsHeight:    1080,                     // match your canvas height
-	// 	},
-	// })
-	// if err != nil {
-	// 	return stream, err
-	// }
+	// Fit to screen - To fix people who don't know how to output at 1080p
+	// First get all the current Item Transforms as we need to pass ALL in the object
+	transformResp, err := client.obs.SceneItems.GetSceneItemTransform(&goobRequestSceneItems.GetSceneItemTransformParams{
+		SceneItemId: &resp.SceneItemId,
+		SceneUuid:   &client.cfg.ObsProxySceneUuid,
+	})
+	if err != nil {
+		return stream, err
+	}
+	transformResp.SceneItemTransform.BoundsType = "OBS_BOUNDS_SCALE_INNER" // fit within screen
+	transformResp.SceneItemTransform.BoundsAlignment = 0                   // center
+	transformResp.SceneItemTransform.BoundsWidth = 1920                    // match your canvas width
+	transformResp.SceneItemTransform.BoundsHeight = 1080                   // match your canvas height
+	_, err = client.obs.SceneItems.SetSceneItemTransform(&goobRequestSceneItems.SetSceneItemTransformParams{
+		SceneItemId:        &resp.SceneItemId,
+		SceneUuid:          &client.cfg.ObsProxySceneUuid,
+		SceneItemTransform: transformResp.SceneItemTransform,
+	})
+	if err != nil {
+		return stream, err
+	}
 
 	return stream, nil
 }

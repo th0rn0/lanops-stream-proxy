@@ -53,7 +53,7 @@ func (client *Client) CreateStream(streamName string) (stream Stream, err error)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		params := map[string]interface{}{
 			"name":            streamName,
-			"enabled":         false,
+			"enabled":         true,
 			"obs_stream_id":   nil,
 			"obs_stream_uuid": nil,
 			"obs_text_uuid":   nil,

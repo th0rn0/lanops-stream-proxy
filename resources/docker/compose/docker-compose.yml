@@ -10,13 +10,13 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-  mediamtx-connect:
-    image: bcanfield/mediamtx-connect
-    container_name: mediamtx-connect
-    restart: unless-stopped
-    network_mode: host
-    networks:
-      - mtx
-    ports:
-      - 3000:3000
+  # mediamtx-connect:
+  #   image: bcanfield/mediamtx-connect
+  #   container_name: mediamtx-connect
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   networks:
+  #     - mtx
+  #   ports:
+  #     - 3000:3000
     
