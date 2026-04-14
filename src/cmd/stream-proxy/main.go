@@ -39,7 +39,9 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed Connecting to DB")
 	}
-	db.AutoMigrate(dbstreams.Stream{})
+	if err := db.AutoMigrate(dbstreams.Stream{}); err != nil {
+		logger.Fatal().Err(err).Msg("Failed to migrate DB")
+	}
 
 	goobsClient, err := goobs.New(cfg.ObsWebSocketAddress, goobs.WithPassword(cfg.ObsWebSocketPassword))
 	if err != nil {
@@ -81,7 +83,7 @@ func main() {
 	logger.Info().Msg("Starting Stream Syncs")
 	go func() {
 		c := time.Tick(7 * time.Second)
-		for _ = range c {
+		for range c {
 			err := mediamtxClient.SyncStreams()
 			if err != nil {
 				logger.Error().Err(err.Err).Msg(err.Message)
@@ -95,7 +97,7 @@ func main() {
 
 	logger.Info().Msg("Starting Active Stream Rotation")
 	c := time.Tick(30 * time.Second)
-	for _ = range c {
+	for range c {
 		err := obsClient.RotateActiveStream()
 		if err != nil {
 			logger.Error().Err(err.Err).Msg(err.Message)

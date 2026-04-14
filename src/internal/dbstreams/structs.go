@@ -16,8 +16,8 @@ type Stream struct {
 	Name    string `gorm:"unique" json:"name"`
 	Enabled bool   `gorm:"default:false" json:"enabled"`
 	// We need both UUID and ID due to imitations with the OBS WebSockets
-	ObsStreamUuid string `json:"obsStreamUuid;null;default:null"`
-	ObsStreamId   int    `json:"obsStreamId;null;default:null"`
-	ObsTextUuid   string `json:"obsTextUuid;null;default:null"`
-	ObsTextId     int    `json:"obsTextId;null;default:null"`
+	ObsStreamUuid string `json:"obsStreamUuid"`
+	ObsStreamId   int    `json:"obsStreamId"`
+	ObsTextUuid   string `json:"obsTextUuid"`
+	ObsTextId     int    `json:"obsTextId"`
 }
