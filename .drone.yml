@@ -24,6 +24,18 @@ steps:
 
   - name: test
     image: golang:1.23
+    environment:
+      # Dummy values required by the api package init() via config.Load().
+      # These are not real secrets — no live OBS/MediaMTX is contacted during tests.
+      DB_PATH: /tmp/stream-proxy-test.db
+      OBS_WEBSOCKET_ADDRESS: localhost:4455
+      OBS_WEBSOCKET_PASSWORD: testpassword
+      OBS_PROXY_SCENE_NAME: TestProxyScene
+      MEDIAMTX_API_ADDRESS: localhost:9997
+      MEDIAMTX_RTMP_ADDRESS: localhost:1935
+      API_ADMIN_USERNAME: testadmin
+      API_ADMIN_PASSWORD: testpassword
+      API_PORT: "18080"
     commands:
       - cd src
       - go test -race -coverprofile=coverage.out -covermode=atomic ./...
