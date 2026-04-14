@@ -46,9 +46,11 @@ func newTestClient(t *testing.T, serverURL string) (*Client, chan channels.MsgCh
 
 func serveJSON(t *testing.T, payload interface{}) *httptest.Server {
 	t.Helper()
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(payload)
+		if err := json.NewEncoder(w).Encode(payload); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}))
 }
 
@@ -110,7 +112,9 @@ func TestGetStreams_Empty(t *testing.T) {
 
 func TestGetStreams_InvalidJSON(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("not valid json {{{{"))
+		if _, err := w.Write([]byte("not valid json {{{{")); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}))
 	defer server.Close()
 
@@ -137,7 +141,9 @@ func TestGetStreams_CorrectPath(t *testing.T) {
 	var capturedPath string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		capturedPath = r.URL.Path
-		json.NewEncoder(w).Encode(MediamtxListStreamsResponse{})
+		if err := json.NewEncoder(w).Encode(MediamtxListStreamsResponse{}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}))
 	defer server.Close()
 

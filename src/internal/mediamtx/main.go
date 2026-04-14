@@ -39,10 +39,9 @@ func (client *Client) SyncStreams() *ClientError {
 
 	// Sync Streams
 	// Remove DB Streams that do NOT exist in Proxy Streams
-	var deleteStream = true
 	for _, dbStream := range dbStreamsList {
 		// check if dbStream exists in proxyStreams. If not, delete
-		deleteStream = true
+		deleteStream := true
 		for _, proxyStream := range proxyStreamsList {
 			if dbStream.Name == proxyStream.Name {
 				deleteStream = false

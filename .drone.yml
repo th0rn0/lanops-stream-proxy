@@ -3,14 +3,57 @@ type: docker
 name: ci
 
 trigger:
-  branch:
-    - main
   event:
     - push
+    - pull_request
 
 steps:
 
-# ── Test ─────────────────────────────────────────────────────────────────────
+# ── Lint ─────────────────────────────────────────────────────────────────────
+
+  - name: discord-lint-start
+    image: curlimages/curl:8.7.1
+    failure: ignore
+    environment:
+      DISCORD_WEBHOOK_URL:
+        from_secret: discord_webhook_url
+    commands:
+      - |
+        curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Lint Started!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
+
+  - name: lint
+    image: golang:1.23
+    commands:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
+      - cd /drone/src/src && go mod download && golangci-lint run --timeout=10m ./...
+
+  - name: discord-lint-success
+    image: curlimages/curl:8.7.1
+    failure: ignore
+    environment:
+      DISCORD_WEBHOOK_URL:
+        from_secret: discord_webhook_url
+    commands:
+      - |
+        curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Lint Success!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
+    when:
+      status:
+        - success
+
+  - name: discord-lint-failure
+    image: curlimages/curl:8.7.1
+    failure: ignore
+    environment:
+      DISCORD_WEBHOOK_URL:
+        from_secret: discord_webhook_url
+    commands:
+      - |
+        curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Lint Failure!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
+    when:
+      status:
+        - failure
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
 
   - name: discord-test-start
     image: curlimages/curl:8.7.1
@@ -24,10 +67,20 @@ steps:
 
   - name: test
     image: golang:1.23
+    environment:
+      # Dummy values required by the api package init() via config.Load().
+      # These are not real secrets — no live OBS/MediaMTX is contacted during tests.
+      DB_PATH: /tmp/stream-proxy-test.db
+      OBS_WEBSOCKET_ADDRESS: localhost:4455
+      OBS_WEBSOCKET_PASSWORD: testpassword
+      OBS_PROXY_SCENE_NAME: TestProxyScene
+      MEDIAMTX_API_ADDRESS: localhost:9997
+      MEDIAMTX_RTMP_ADDRESS: localhost:1935
+      API_ADMIN_USERNAME: testadmin
+      API_ADMIN_PASSWORD: testpassword
+      API_PORT: "18080"
     commands:
-      - cd src
-      - go test -race -coverprofile=coverage.out -covermode=atomic ./...
-      - go tool cover -func=coverage.out | tail -1
+      - cd /drone/src/src && go test -race ./...
 
   - name: discord-test-success
     image: curlimages/curl:8.7.1
@@ -56,6 +109,7 @@ steps:
         - failure
 
 # ── Docker Build & Push ───────────────────────────────────────────────────────
+# Only runs on push to main or v* tags.
 
   - name: discord-build-start
     image: curlimages/curl:8.7.1
@@ -66,6 +120,12 @@ steps:
     commands:
       - |
         curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Build Started!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
+    when:
+      branch:
+        - main
+      event:
+        - push
+        - tag
 
   - name: build-push
     image: plugins/docker
@@ -79,6 +139,12 @@ steps:
       auto_tag: true
       auto_tag_aliases:
         - latest
+    when:
+      branch:
+        - main
+      event:
+        - push
+        - tag
 
   - name: discord-build-success
     image: curlimages/curl:8.7.1
@@ -90,6 +156,11 @@ steps:
       - |
         curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Build Success!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
     when:
+      branch:
+        - main
+      event:
+        - push
+        - tag
       status:
         - success
 
@@ -103,5 +174,10 @@ steps:
       - |
         curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Build Failure!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
     when:
+      branch:
+        - main
+      event:
+        - push
+        - tag
       status:
         - failure

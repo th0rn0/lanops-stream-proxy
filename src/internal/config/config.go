@@ -8,7 +8,7 @@ import (
 )
 
 func Load() Config {
-	godotenv.Load()
+	_ = godotenv.Load()
 
 	// DB
 	dbPath := os.Getenv("DB_PATH")

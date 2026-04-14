@@ -67,7 +67,9 @@ func Run() {
 	authorized.GET("/streams", handleGetStreams)
 	authorized.GET("/streams/:name", handleGetStreamByName)
 	authorized.POST("/streams/:name/enable", handleEnableStreamByName)
-	r.Run(fmt.Sprintf(":%s", cfg.ApiPort))
+	if err := r.Run(fmt.Sprintf(":%s", cfg.ApiPort)); err != nil {
+		logger.Fatal().Err(err).Msg("Failed to start API server")
+	}
 }
 
 func handleGetStreams(c *gin.Context) {
