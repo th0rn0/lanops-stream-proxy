@@ -6,6 +6,7 @@ trigger:
   event:
     - push
     - pull_request
+    - tag
 
 steps:
 
@@ -121,8 +122,9 @@ steps:
       - |
         curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Build Started!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
     when:
-      branch:
-        - main
+      ref:
+        - refs/heads/main
+        - refs/tags/**
       event:
         - push
         - tag
@@ -140,8 +142,9 @@ steps:
       auto_tag_aliases:
         - latest
     when:
-      branch:
-        - main
+      ref:
+        - refs/heads/main
+        - refs/tags/**
       event:
         - push
         - tag
@@ -156,8 +159,9 @@ steps:
       - |
         curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Build Success!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
     when:
-      branch:
-        - main
+      ref:
+        - refs/heads/main
+        - refs/tags/**
       event:
         - push
         - tag
@@ -174,8 +178,9 @@ steps:
       - |
         curl -s -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$DRONE_REPO - $DRONE_SOURCE_BRANCH - Build Failure!\",\"url\":\"$DRONE_BUILD_LINK\"}]}"
     when:
-      branch:
-        - main
+      ref:
+        - refs/heads/main
+        - refs/tags/**
       event:
         - push
         - tag
